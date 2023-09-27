@@ -8,6 +8,7 @@ body{
 
 header{
     color: black;
+    display: none;
 }
 
 .title{
@@ -17,8 +18,8 @@ header{
 .board{
     display: grid;
     justify-content: center;
-    grid-template-columns: repeat(20, 30px);
-    grid-auto-rows: 30px;
+    grid-template-columns: repeat(20, 25px);
+    grid-auto-rows: 25px;
     width: max-content;
     margin: auto;
     border: 3px solid black;
@@ -31,4 +32,102 @@ header{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.playerSymbol{
+    border: 3px solid black;
+    padding: 5px;
+}
+
+main{
+    text-align: center;
+    display: none;
+}
+
+.game_results{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.btn {
+  background-color: #FFFFFF;
+  border: 1px solid #222222;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #222222;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 8px;
+  margin: 0;
+  outline: none;
+  padding: 13px 23px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  touch-action: manipulation;
+  transition: box-shadow .2s,-ms-transform .1s,-webkit-transform .1s,transform .1s;
+  user-select: none;
+  -webkit-user-select: none;
+  width: auto;
+}
+
+.btn {
+  box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
+  transition: box-shadow .2s;
+}
+
+.btn {
+  background-color: #F7F7F7;
+  border-color: #000000;
+  transform: scale(.96);
+}
+
+#landing_page{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 95vh;
+}
+
+.inputs{
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 50px;
+}
+
+.inputs input[type="text"] {
+    border: none; 
+    border-bottom: 2px solid rgb(0, 0, 0);
+    outline: none;
+    background: #eff1f2;
+    height: 40px;
+    padding: 0 1em;
+    font: 15px "Raleway", sans-serif;
+    font-weight: bold;
+    padding-top: 9px;
+    padding-bottom: 5px;
+}
+
+.landing_page_title{
+    margin-bottom: 55px;
+}
+
+.square{
+    position: relative;
+}
+
+.square::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: black;
+    transform: translateY(-50%);
 }

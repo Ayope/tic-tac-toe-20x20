@@ -4,47 +4,234 @@
     <title>tic-tac</title>
     <link rel="stylesheet" href="./style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 </head>
 <body>
     <header>
         <h1 class="title">Tic-Tac-Toe game</h1>
     </header>
-    <!-- <img src="./img/black_X.png" alt="x"> -->
+
+    <section id="landing_page">
+        <h1 class="landing_page_title">Tic-Tac-Toe game</h1>
+        <div class="inputs">
+            <input type="text" placeholder="First player name">
+            <input type="text" placeholder="Second player name">
+        </div>
+        <button class="btn" onclick="startNewGame()">PLAY</button>
+    </section>
+
     <main>
+        <h3 class="players">
+            <span class="playerSymbol"><i class="fa-solid fa-x"></i></span>
+            <span id="player_1" style="margin-right: 30px;"></span> 
+            <span id="score_player_1">0</span> - <span id="score_player_2">0</span> 
+            <span id="player_2" style="margin-left: 30px;"></span>
+            <span class="playerSymbol"><i class="fa-solid fa-o"></i></span>
+        </h3>
         <div class="board"></div>
+        <h4 class="game_results"></h4>
+        <button onclick="restartGame()" style="display: none;" id="restartGameBtn" class="btn">Start a new game</button>
     </main>
 </body>
-<script>
+<script> 
+    localStorage.clear();
+
+    const main = document.querySelector('main');
+    const header = document.querySelector('header');
+    const landingPageSection = document.querySelector('#landing_page');
+
     const board = document.querySelector('.board');
-    let currentShape = 'o'
+    const gameResultsText = document.querySelector('.game_results'); 
+    const restartGameBtn = document.querySelector('#restartGameBtn');
+
+    const player_1 = document.getElementById('player_1');
+    const player_2 = document.getElementById('player_2');  
+    const score_player_1 = document.getElementById('score_player_1');
+    const score_player_2 = document.getElementById('score_player_2'); 
     
+    let isGameFinished = false;
+    let lastShape = 'o';
+    let cells = new Array(400);
+
     function drawSquares(){
-        for(i = 1; i <= 400; i++){
+        board.innerHTML = '';
+        for(i = 0; i < 400; i++){
             let cell = document.createElement('div');
             cell.classList.add('cell');
             cell.setAttribute('data-value',i);
-            cell.setAttribute('onclick','manipulateCell(this)');
+            cell.setAttribute('onclick','fillCell(this)');
             board.appendChild(cell);
         }    
     }
 
-    function manipulateCell(cell){
-        fillCell(cell);
+    function fillCell(cell){
+        if(!isGameFinished){
+            if(cell.querySelector('i') === null && !isGameFinished){
+                if(lastShape === 'o'){
+                    cell.innerHTML = `<i class="fa-solid fa-x" name="x"></i>`;
+                    lastShape = 'x';
+                }else{
+                    cell.innerHTML = `<i class="fa-solid fa-o" name="o"></i>`;
+                    lastShape = 'o';
+                }
+            }
+            checkWins(cell);
+            isAllCellsFilled();
+        }
+        
     }
 
-    function fillCell(cell){
-        if(cell.querySelector('i') === null){
-            if(currentShape === 'o'){
-                cell.innerHTML = `<i class="fa-solid fa-x" name="x"></i>`;
-                currentShape = 'x';
-            }else{
-                cell.innerHTML = `<i class="fa-solid fa-o" name="o"></i>`;
-                currentShape = 'o';
+    function isAllCellsFilled(){
+        const filledCells = board.querySelectorAll('div i');
+
+        if(filledCells.length === 400 && !isGameFinished){
+            gameResultsText.innerText = "Tie! You reached the limit of the board.";
+            restartGameBtn.style.display = "inline-block";
+            isGameFinished = true;
+        }
+    }
+
+    function checkWins(cell){
+        let insertedIndex = cell.getAttribute('data-value'); 
+        cells[insertedIndex] = cell;
+        for(i = 0; i < cells.length; i++){
+            if(cells[i] != undefined && !isGameFinished){
+                if(
+                    checkIfFirstElementIsValid(cells[i]) 
+                    && cells[i].childNodes[0].getAttribute('name')  === cells[i+1]?.childNodes[0].getAttribute('name')
+                    && cells[i+1]?.childNodes[0].getAttribute('name') === cells[i+2]?.childNodes[0].getAttribute('name')
+                    && cells[i+2]?.childNodes[0].getAttribute('name') === cells[i+3]?.childNodes[0].getAttribute('name')
+                    && cells[i+3]?.childNodes[0].getAttribute('name') === cells[i+4]?.childNodes[0].getAttribute('name')
+                ){
+                    announceWinner(cells[i].childNodes[0].getAttribute('name'));
+                }
+
+                if(
+                    cells[i].childNodes[0].getAttribute('name')  === cells[i+19]?.childNodes[0].getAttribute('name')
+                    && cells[i+19]?.childNodes[0].getAttribute('name') === cells[i+38]?.childNodes[0].getAttribute('name')
+                    && cells[i+38]?.childNodes[0].getAttribute('name') === cells[i+57]?.childNodes[0].getAttribute('name')
+                    && cells[i+57]?.childNodes[0].getAttribute('name') === cells[i+76]?.childNodes[0].getAttribute('name')
+                ){
+                    announceWinner(cells[i].childNodes[0].getAttribute('name'));
+                }
+                
+                if(
+                    cells[i].childNodes[0].getAttribute('name')  === cells[i+21]?.childNodes[0].getAttribute('name')
+                    && cells[i+21]?.childNodes[0].getAttribute('name') === cells[i+42]?.childNodes[0].getAttribute('name')
+                    && cells[i+42]?.childNodes[0].getAttribute('name') === cells[i+63]?.childNodes[0].getAttribute('name')
+                    && cells[i+63]?.childNodes[0].getAttribute('name') === cells[i+84]?.childNodes[0].getAttribute('name')
+                ){
+                    announceWinner(cells[i].childNodes[0].getAttribute('name'));
+                }
+
+                if(
+                    cells[i].childNodes[0].getAttribute('name')  === cells[i+20]?.childNodes[0].getAttribute('name')
+                    && cells[i+20]?.childNodes[0].getAttribute('name') === cells[i+40]?.childNodes[0].getAttribute('name')
+                    && cells[i+40]?.childNodes[0].getAttribute('name') === cells[i+60]?.childNodes[0].getAttribute('name')
+                    && cells[i+60]?.childNodes[0].getAttribute('name') === cells[i+80]?.childNodes[0].getAttribute('name')
+                ){
+                    announceWinner(cells[i].childNodes[0].getAttribute('name'));
+                }
             }
         }
     }
 
-    drawSquares();
+    function checkIfFirstElementIsValid(element){
+        if(element.getAttribute('data-value') % 20 > 15){
+            return false;
+        }
+        return true;
+    }
+
+    function restartGame(){                    
+        drawSquares();
+        cells = new Array(400);
+        gameResultsText.innerText = '';
+        restartGameBtn.style.display = "none";
+        isGameFinished = false;
+    }
+
+    function announceWinner(winningSymbol){
+        let previousScore;
+        switch(winningSymbol){
+            case 'x':
+                gameResultsText.innerText = `${localStorage.getItem('player_1')} wins`;
+                updateScore('score_player_1');
+                score_player_1.innerText = localStorage.getItem('score_player_1');
+                break;
+            case 'o':
+                gameResultsText.innerText = `${localStorage.getItem('player_2')} wins`;
+                updateScore('score_player_2');
+                score_player_2.innerText = localStorage.getItem('score_player_2');
+                break;
+        }
+        restartGameBtn.style.display = "inline-block";
+        isGameFinished = true;
+    }
+
+    function showErrorToaster(){
+        toastr["error"]("Name could not be less than 3 characters")
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    }
+
+    function startNewGame(){
+        const names = document.querySelectorAll('.inputs input[type=text]');
+        const namesArray = Array.from(names);
+
+        if(verifyNames(namesArray)){
+            storeNames(namesArray);
+            
+            drawSquares();
+            
+            landingPageSection.style.display = "none";
+            header.style.display = "block";
+            main.style.display = "block";
+            
+        }else{
+            showErrorToaster();
+        }
+    }
+
+    function verifyNames(names){
+        const hasShortName = names.some(name => name.value.length < 3);
+        return !hasShortName
+    }
+
+    function storeNames(names){
+        localStorage.clear();
+
+        names.forEach((name, index) => {            
+            localStorage.setItem(`player_${index+1}`, name.value);
+            localStorage.setItem(`score_player_${index+1}`, 0);
+        });
+
+        player_1.innerText = localStorage.getItem(`player_1`).toUpperCase();
+        player_2.innerText = localStorage.getItem('player_2').toUpperCase();
+    }
+
+    function updateScore(score_key){
+        previousScore = parseInt(localStorage.getItem(score_key));
+        localStorage.setItem(score_key, previousScore+1);
+    }
 
 </script>
 </html>
